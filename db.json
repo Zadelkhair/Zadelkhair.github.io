@@ -149,37 +149,37 @@
     ],
     "experience": [
         {
-            "title": "IT teacher",
+            "title": "Fullstack developer at multilist.immo",
+            "place": {
+                "name": "Multilist.immo,",
+                "link": "#"
+            },
+            "date": "2022/3 - Present",
+            "details": "",
+            "content": "Collaborating with a team of 6  developers to launch a new version of multilist real estate website. ",
+            "hideinweb": true
+        },
+        {
+            "title": "High school IT teacher",
             "place": {
                 "name": "education government, casablanca-settat",
                 "link": "#"
             },
-            "date": "2021 - Present",
+            "date": "2021/10- Present",
             "details": "",
-            "content": "",
-            "hideinweb":true
+            "content": "IT teacher, i teach Hight school students IT ( Software development, Networking, OS … )",
+            "hideinweb": true
         },
         {
-            "title": "stock management system",
+            "title": "Fullstack developer at atlas web solution",
             "place": {
-                "name": "tax administration , Marrakech",
+                "name": "Marrakech",
                 "link": "#"
             },
-            "date": "2021 - Present",
+            "date": "2021/6 - 2021/10 ",
             "details": "",
-            "content": "Stock management application for the human resources department of the tax administration in Marrakech.",
-            "hideinweb":true
-        },
-        {
-            "title": "elwadifa.info",
-            "place": {
-                "name": "freelance",
-                "link": "#"
-            },
-            "date": "2021 - Present",
-            "details": "",
-            "content": "job announcement website.",
-            "hideinweb":true
+            "content": "Developing web applications",
+            "hideinweb": true
         },
         {
             "title": "traineeship at AGRI4.0",
@@ -187,10 +187,10 @@
                 "name": "Agri 4.0, AGADIR",
                 "link": "#"
             },
-            "date": "2021 - 3 months",
+            "date": "2021/3 - 2021/6",
             "details": "",
             "content": "3-month internship at the agri 4.0 company, I developed during this internship a mobile application that manages a nursery with reactnative laravel technology.",
-            "hideinweb":false
+            "hideinweb": false
         },
         {
             "title": "Frontend developer at ZadTech",
@@ -198,32 +198,21 @@
                 "name": "ZadTech, Elmohammadia",
                 "link": "#"
             },
-            "date": "2020 - 5 months",
+            "date": "2020/10 - 2021/02",
             "details": "",
             "content": "Frontend developer ( vuejs and angular ) at zadtech company.",
-            "hideinweb":false
+            "hideinweb": false
         },
         {
-            "title": "IT administrator at Al-Khayrat",
+            "title": "IT technician",
             "place": {
                 "name": "Al-khayrat, Berrechid ",
                 "link": "#"
             },
             "date": "2016-2020",
             "details": "",
-            "content": "i worked as an it administrator, i have developed during this period multiple application, Candidate administration ( desktop application with c# ) , code permis al khayrat ( android version with java , disktop application with c# , web version with php ' laravel ' / vuejs )",
-            "hideinweb":false
-        },
-        {
-            "title": "utory.ma",
-            "place": {
-                "name": "freelance,Berrechid",
-                "link": "#"
-            },
-            "date": "2021",
-            "details": "",
-            "content": "UTORY , school management course online With laravel and vuejsWith laravel and vuejs.",
-            "hideinweb":true
+            "content": "i worked as an it technician, i have developed during this period multiple application, Candidate administration ( desktop application with c# ) , code permis al khayrat ( android version with java , disktop application with c# , web version with php ' laravel ' / vuejs )",
+            "hideinweb": false
         },
         {
             "title": "Fullstack web developer Freelancer",
@@ -234,82 +223,49 @@
             "date": "2019-2021",
             "details": "",
             "content": "Fullstack web developer laravel/vuejs",
-            "hideinweb":false
+            "hideinweb": false
         },
         {
-            "title": "Code permis",
-            "place": {
-                "name": "Alkhayrat, Berrechid",
-                "link": "#"
-            },
-            "date": "2021",
-            "details": "",
-            "content": "Code permis , android application with Java and SQLite",
-            "hideinweb":true
-        },
-        {
-            "title": "Code Alkhayrat",
-            "place": {
-                "name": "Alkhayrat, Berrechid",
-                "link": "#"
-            },
-            "date": "2020",
-            "details": "",
-            "content": "CODE AL KHAYRAT , with laravel/vuejs and graphql",
-            "hideinweb":true
-        },
-        {
-            "title": "Dental care",
-            "place": {
-                "name": "Frelance, Berrechid",
-                "link": "#"
-            },
-            "date": "2020",
-            "details": "",
-            "content": "dental care  Web application with LARAVEL and VUEJS",
-            "hideinweb":true
-        },
-        {
-            "title": "ISTICG",
+            "title": "traineeship at ISTICG",
             "place": {
                 "name": "ISTICG, Berrechid",
                 "link": "#"
             },
-            "date": "2019",
+            "date": "2019/3 - 2019/5",
             "details": "",
             "content": "timeline table management, desktop application with c# and sql server",
-            "hideinweb":true
+            "hideinweb": true
         }
     ],
     "resume": {
-        "info" : [
+        "info": [
             {
-                "name" : "Residence",
-                "value" : "Morocco, Berrechid"
+                "name": "Residence",
+                "value": "Morocco, Berrechid"
             },
             {
-                "name" : "Nationality",
-                "value" : "Morocco"
+                "name": "Nationality",
+                "value": "Morocco"
             },
             {
-                "name" : "Birthdate",
-                "value" : "1998/10/14"
+                "name": "Birthdate",
+                "value": "1998/10/14"
             },
             {
-                "name" : "Gender",
-                "value" : "Male"
+                "name": "Gender",
+                "value": "Male"
             },
             {
-                "name" : "Phone",
-                "value" : "+212680096104"
+                "name": "Phone",
+                "value": "+212680096104"
             },
             {
-                "name" : "Email",
-                "value" : "abdo.zad.raja2@gmail.com"
+                "name": "Email",
+                "value": "abdo.zad.raja2@gmail.com"
             },
             {
-                "name" : "Website",
-                "value" : "www.zadelkhair.me"
+                "name": "Website",
+                "value": "https://zadelkhair.github.io"
             }
         ],
         "skills": [
