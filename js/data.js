@@ -9,6 +9,7 @@ const siteData = {
             pretitle: "About",
             text: "Driven full-stack developer with expertise in building robust web applications, mobile solutions, and cloud-based systems. Passionate about solving challenges with clean and efficient code.",
             button: "Download Resume",
+            resume:"https://docs.google.com/document/d/1aE8-jdYmZPrZvYEEI__lvBIseMaWhAmZ_QJ2sr8k6cE/export?format=pdf",
             image: {
                 src: "images/me2.png",
                 srcset: "images/me2.png 1x, images/me2.png 2x"

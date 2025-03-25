@@ -387,7 +387,7 @@
                     <div class="about-info__text">
                         <h2 class="text-pretitle with-line">${about.info.pretitle}</h2>
                         <p class="attention-getter">${about.info.text}</p>
-                        <a href="#0" class="btn btn--medium u-fullwidth">${about.info.button}</a>
+                        <a href="${about.info.resume}" class="btn btn--medium u-fullwidth">${about.info.button}</a>
                     </div>
                 </div>
             </div>
