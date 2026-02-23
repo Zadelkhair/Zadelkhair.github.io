@@ -2,7 +2,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { Sora, Work_Sans } from 'next/font/google'
 import { motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import styles from '@/styles/Home.module.css'
 import siteContent from '@/data/site-content.json'
 
@@ -100,9 +100,40 @@ const sectionVariants = {
   },
 }
 
+const projectVideoExtensions = new Set([
+  'mp4',
+  'm4v',
+  'mov',
+  'webm',
+  'ogv',
+  'ogg',
+])
+
+const toLinkHref = (value, fallback = '') => {
+  const raw = getString(value, fallback).trim()
+  if (!raw) {
+    return ''
+  }
+  if (
+    raw.startsWith('/') ||
+    raw.startsWith('http://') ||
+    raw.startsWith('https://') ||
+    raw.startsWith('mailto:') ||
+    raw.startsWith('tel:')
+  ) {
+    return raw
+  }
+  return `/${raw.replace(/^\/+/, '')}`
+}
+
 const toPublicPath = (assetPath) => {
   const cleanedPath = getString(assetPath).replace(/^\/+/, '')
   return cleanedPath.length > 0 ? `/${cleanedPath}` : '/images/profile/zadelkhair-profile.jpeg'
+}
+
+const getProjectMediaType = (assetPath) => {
+  const extension = getString(assetPath).split('.').pop().toLowerCase()
+  return projectVideoExtensions.has(extension) ? 'video' : 'image'
 }
 
 export default function Home() {
@@ -120,7 +151,7 @@ export default function Home() {
   const phone = getString(contact.phone)
   const phoneDisplay = getString(contact.phoneDisplay, phone)
   const locationText = getString(contact.location)
-  const resumePath = getString(
+  const resumePath = toLinkHref(
     contact.resumePath,
     '/abdelkoddous-zadelkhair-resume.pdf'
   )
@@ -129,7 +160,9 @@ export default function Home() {
   const heroEyebrow = getString(hero.eyebrow)
   const heroTitle = getString(hero.title)
   const heroLead = getString(hero.lead)
-  const portraitSrc = getString(hero.portraitSrc, '/images/profile/zadelkhair-profile.jpeg')
+  const portraitSrc = toPublicPath(
+    getString(hero.portraitSrc, '/images/profile/zadelkhair-profile.jpeg')
+  )
   const portraitAlt = getString(hero.portraitAlt, 'Developer portrait')
   const ctaEmailLabel = getString(cta.emailLabel, email)
   const ctaPhoneLabel = getString(cta.phoneLabel, 'Call Me')
@@ -141,6 +174,14 @@ export default function Home() {
       return accumulator
     }, {})
   )
+  const [visibleProjects, setVisibleProjects] = useState(() =>
+    works.reduce((accumulator, project, index) => {
+      accumulator[`${project.title}-${index}`] = false
+      return accumulator
+    }, {})
+  )
+  const [loadedProjectMedia, setLoadedProjectMedia] = useState({})
+  const projectCardRefs = useRef(new Map())
 
   useEffect(() => {
     let isMounted = true
@@ -185,6 +226,50 @@ export default function Home() {
     }
   }, [])
 
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) {
+            return
+          }
+
+          const projectId = entry.target.getAttribute('data-project-id')
+          if (!projectId) {
+            return
+          }
+
+          setVisibleProjects((current) => {
+            if (current[projectId]) {
+              return current
+            }
+
+            return { ...current, [projectId]: true }
+          })
+
+          observer.unobserve(entry.target)
+        })
+      },
+      {
+        root: null,
+        rootMargin: '180px 0px',
+        threshold: 0.12,
+      }
+    )
+
+    projectCardRefs.current.forEach((node) => {
+      if (node) {
+        observer.observe(node)
+      }
+    })
+
+    return () => observer.disconnect()
+  }, [])
+
   const setProjectSlide = (projectTitle, slideIndex) => {
     setProjectSlides((current) => ({ ...current, [projectTitle]: slideIndex }))
   }
@@ -194,6 +279,16 @@ export default function Home() {
       const activeIndex = current[projectTitle] ?? 0
       const nextIndex = (activeIndex + direction + totalSlides) % totalSlides
       return { ...current, [projectTitle]: nextIndex }
+    })
+  }
+
+  const markProjectMediaLoaded = (mediaKey) => {
+    setLoadedProjectMedia((current) => {
+      if (current[mediaKey]) {
+        return current
+      }
+
+      return { ...current, [mediaKey]: true }
     })
   }
 
@@ -394,24 +489,83 @@ export default function Home() {
           </div>
 
           <div className={styles.projectGrid}>
-            {works.map((project) => {
+            {works.map((project, projectIndex) => {
+              const projectId = `${project.title}-${projectIndex}`
               const totalSlides = project.swiperImages.length || 1
               const activeIndex = projectSlides[project.title] ?? 0
               const safeIndex = activeIndex % totalSlides
-              const activeImage = toPublicPath(
+              const activeMediaPath = toPublicPath(
                 project.swiperImages[safeIndex] || project.image
               )
+              const activeMediaType = getProjectMediaType(
+                project.swiperImages[safeIndex] || project.image
+              )
+              const isProjectVisible = Boolean(visibleProjects[projectId])
+              const mediaLoadKey = `${projectId}-${safeIndex}-${activeMediaPath}`
+              const isMediaLoaded = Boolean(loadedProjectMedia[mediaLoadKey])
 
               return (
-                <article key={project.title} className={styles.projectCard}>
+                <article
+                  key={projectId}
+                  className={styles.projectCard}
+                  data-project-id={projectId}
+                  ref={(node) => {
+                    if (node) {
+                      projectCardRefs.current.set(projectId, node)
+                    } else {
+                      projectCardRefs.current.delete(projectId)
+                    }
+                  }}
+                >
                   <div className={styles.projectImageFrame}>
-                    <Image
-                      src={activeImage}
-                      alt={`${project.title} slide ${safeIndex + 1}`}
-                      fill
-                      sizes="(max-width: 700px) 100vw, (max-width: 1040px) 50vw, 33vw"
-                      className={styles.projectImage}
-                    />
+                    {!isProjectVisible ? (
+                      <div className={styles.projectMediaPlaceholder}>
+                        <span className={styles.projectMediaSpinner} aria-hidden="true" />
+                        <p className={styles.projectMediaLabel}>Media loads on scroll</p>
+                      </div>
+                    ) : (
+                      <>
+                        {activeMediaType === 'video' ? (
+                          <video
+                            key={mediaLoadKey}
+                            src={activeMediaPath}
+                            className={styles.projectVideo}
+                            controls
+                            playsInline
+                            preload="metadata"
+                            onLoadedMetadata={() =>
+                              markProjectMediaLoaded(mediaLoadKey)
+                            }
+                            onLoadedData={() => markProjectMediaLoaded(mediaLoadKey)}
+                            onCanPlay={() => markProjectMediaLoaded(mediaLoadKey)}
+                          />
+                        ) : (
+                          <Image
+                            src={activeMediaPath}
+                            alt={`${project.title} slide ${safeIndex + 1}`}
+                            fill
+                            sizes="(max-width: 700px) 100vw, (max-width: 1040px) 50vw, 33vw"
+                            className={styles.projectImage}
+                            loading="lazy"
+                            onLoadingComplete={() =>
+                              markProjectMediaLoaded(mediaLoadKey)
+                            }
+                          />
+                        )}
+
+                        {!isMediaLoaded && (
+                          <div className={styles.projectMediaLoader}>
+                            <span
+                              className={styles.projectMediaSpinner}
+                              aria-hidden="true"
+                            />
+                            <p className={styles.projectMediaLabel}>
+                              Loading media...
+                            </p>
+                          </div>
+                        )}
+                      </>
+                    )}
                   </div>
                   {totalSlides > 1 && (
                     <div className={styles.projectSliderControls}>

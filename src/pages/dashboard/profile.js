@@ -6,7 +6,7 @@ import {
   getContent,
   rebuildSite,
   saveContent,
-  uploadImage,
+  uploadAsset,
 } from '@/lib/admin-api'
 import { normalizeContent, toAssetPath, toPublicPath } from '@/lib/admin-content'
 
@@ -130,9 +130,39 @@ export default function DashboardProfile() {
     setError('')
 
     try {
-      const payload = await uploadImage({ file, folder: 'profile' })
+      const payload = await uploadAsset({
+        file,
+        folder: 'profile',
+        mode: 'image',
+      })
       updateHero('portraitSrc', toAssetPath(payload.relativePath || payload.publicPath))
       setNotice('Portrait image uploaded. Save to persist.')
+    } catch (uploadError) {
+      setError(uploadError.message)
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
+  const uploadResume = async (event) => {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+
+    if (!file) {
+      return
+    }
+
+    setIsUploading(true)
+    setError('')
+
+    try {
+      const payload = await uploadAsset({
+        file,
+        folder: 'cv',
+        mode: 'document',
+      })
+      updateContact('resumePath', toAssetPath(payload.relativePath || payload.publicPath))
+      setNotice('CV uploaded. Save to persist.')
     } catch (uploadError) {
       setError(uploadError.message)
     } finally {
@@ -322,6 +352,23 @@ export default function DashboardProfile() {
                   value={content.contact.resumePath}
                   onChange={(event) => updateContact('resumePath', event.target.value)}
                 />
+              </div>
+
+              <div className={styles.field}>
+                <label htmlFor="resume-upload">Upload CV (PDF)</label>
+                <input
+                  id="resume-upload"
+                  type="file"
+                  accept=".pdf,application/pdf"
+                  className={styles.input}
+                  onChange={uploadResume}
+                  disabled={isUploading}
+                />
+                <p className={styles.helperText}>
+                  {isUploading
+                    ? 'Uploading...'
+                    : 'Uploads to /public/images/uploads/cv and sets resume path automatically.'}
+                </p>
               </div>
             </div>
           </article>

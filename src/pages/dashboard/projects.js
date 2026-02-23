@@ -6,7 +6,7 @@ import {
   getContent,
   rebuildSite,
   saveContent,
-  uploadImage,
+  uploadAsset,
 } from '@/lib/admin-api'
 import {
   createId,
@@ -16,6 +16,13 @@ import {
   toAssetPath,
   toPublicPath,
 } from '@/lib/admin-content'
+
+const VIDEO_EXTENSIONS = new Set(['mp4', 'm4v', 'webm', 'ogv', 'ogg', 'mov'])
+
+const getMediaType = (assetPath) => {
+  const extension = String(assetPath || '').split('.').pop().toLowerCase()
+  return VIDEO_EXTENSIONS.has(extension) ? 'video' : 'image'
+}
 
 const emptyProject = () => ({
   id: createId('project'),
@@ -164,7 +171,11 @@ export default function DashboardProjects() {
     setError('')
 
     try {
-      const payload = await uploadImage({ file, folder: 'projects' })
+      const payload = await uploadAsset({
+        file,
+        folder: 'projects',
+        mode: 'image',
+      })
       const nextPath = toAssetPath(payload.relativePath || payload.publicPath)
 
       updateSelectedProject((project) => ({
@@ -198,7 +209,11 @@ export default function DashboardProjects() {
     try {
       const uploads = await Promise.all(
         files.map(async (file) => {
-          const result = await uploadImage({ file, folder: 'projects/slides' })
+          const result = await uploadAsset({
+            file,
+            folder: 'projects/slides',
+            mode: 'media',
+          })
           return toAssetPath(result.relativePath || result.publicPath)
         })
       )
@@ -208,7 +223,7 @@ export default function DashboardProjects() {
         swiperImages: [...project.swiperImages, ...uploads],
       }))
 
-      setNotice(`${uploads.length} slide image(s) uploaded. Save to persist.`)
+      setNotice(`${uploads.length} slide media file(s) uploaded. Save to persist.`)
     } catch (uploadError) {
       setError(uploadError.message)
     } finally {
@@ -259,13 +274,13 @@ export default function DashboardProjects() {
         <title>Admin Projects</title>
         <meta
           name="description"
-          content="Projects administration with CRUD tables, forms, and image uploaders."
+          content="Projects administration with CRUD tables, forms, and image/video uploaders."
         />
       </Head>
 
       <AdminLayout
         title="Projects"
-        description="Create, update, and delete portfolio projects with dedicated image and slide uploaders."
+        description="Create, update, and delete portfolio projects with dedicated image and media slide uploaders."
         actions={actions}
         notice={notice}
         error={error}
@@ -468,7 +483,7 @@ export default function DashboardProjects() {
                       </button>
                       <input
                         type="file"
-                        accept="image/*"
+                        accept="image/*,video/*"
                         multiple
                         className={styles.input}
                         onChange={uploadSlides}
@@ -482,6 +497,7 @@ export default function DashboardProjects() {
                       <thead>
                         <tr>
                           <th>#</th>
+                          <th>Type</th>
                           <th>Path</th>
                           <th>Preview</th>
                           <th>Actions</th>
@@ -491,6 +507,7 @@ export default function DashboardProjects() {
                         {selectedProject.swiperImages.map((slide, index) => (
                           <tr key={`${selectedProject.id}-${index}`}>
                             <td>{index + 1}</td>
+                            <td>{getMediaType(slide)}</td>
                             <td>
                               <input
                                 className={styles.input}
@@ -514,7 +531,9 @@ export default function DashboardProjects() {
                                   target="_blank"
                                   rel="noopener noreferrer"
                                 >
-                                  Open
+                                  {getMediaType(slide) === 'video'
+                                    ? 'Open Video'
+                                    : 'Open Image'}
                                 </a>
                               ) : (
                                 '--'

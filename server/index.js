@@ -10,19 +10,38 @@ const STATIC_DIR = path.join(ROOT_DIR, process.env.STATIC_DIR || 'out')
 const CONTENT_FILE = path.join(ROOT_DIR, 'src', 'data', 'site-content.json')
 const MAX_REQUEST_BODY_BYTES = 2 * 1024 * 1024
 const MAX_UPLOAD_BYTES = 8 * 1024 * 1024
-const MAX_UPLOAD_BODY_BYTES = 12 * 1024 * 1024
+const MAX_UPLOAD_BODY_BYTES = 64 * 1024 * 1024
 const UPLOADS_DIR = path.join(ROOT_DIR, 'public', 'images', 'uploads')
 
 const MIME_TO_EXTENSION = {
+  'application/pdf': 'pdf',
   'image/gif': 'gif',
   'image/jpeg': 'jpg',
   'image/jpg': 'jpg',
   'image/png': 'png',
   'image/svg+xml': 'svg',
   'image/webp': 'webp',
+  'video/mp4': 'mp4',
+  'video/m4v': 'm4v',
+  'video/webm': 'webm',
+  'video/ogg': 'ogv',
+  'video/quicktime': 'mov',
+}
+
+const UPLOAD_LIMITS_BY_TYPE = {
+  document: 10 * 1024 * 1024,
+  image: MAX_UPLOAD_BYTES,
+  video: 50 * 1024 * 1024,
 }
 
 const MIME_TYPES = {
+  '.pdf': 'application/pdf',
+  '.mp4': 'video/mp4',
+  '.m4v': 'video/mp4',
+  '.webm': 'video/webm',
+  '.ogg': 'video/ogg',
+  '.ogv': 'video/ogg',
+  '.mov': 'video/quicktime',
   '.css': 'text/css; charset=utf-8',
   '.gif': 'image/gif',
   '.html': 'text/html; charset=utf-8',
@@ -31,7 +50,6 @@ const MIME_TYPES = {
   '.jpeg': 'image/jpeg',
   '.js': 'application/javascript; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
-  '.pdf': 'application/pdf',
   '.png': 'image/png',
   '.svg': 'image/svg+xml',
   '.txt': 'text/plain; charset=utf-8',
@@ -162,12 +180,37 @@ const isSvgBuffer = (buffer) => {
   return text.startsWith('<svg') || text.startsWith('<?xml')
 }
 
+const isPdfBuffer = (buffer) =>
+  buffer.length >= 5 && buffer.subarray(0, 5).toString('utf8') === '%PDF-'
+
+const isMp4LikeBuffer = (buffer) => {
+  if (buffer.length < 12) {
+    return false
+  }
+
+  return buffer.subarray(4, 8).toString('ascii') === 'ftyp'
+}
+
+const isWebmBuffer = (buffer) =>
+  buffer.length >= 4 &&
+  buffer[0] === 0x1a &&
+  buffer[1] === 0x45 &&
+  buffer[2] === 0xdf &&
+  buffer[3] === 0xa3
+
+const isOggBuffer = (buffer) =>
+  buffer.length >= 4 && buffer.subarray(0, 4).toString('ascii') === 'OggS'
+
 const detectMimeFromBuffer = (buffer) => {
   if (isJpegBuffer(buffer)) return 'image/jpeg'
   if (isPngBuffer(buffer)) return 'image/png'
   if (isGifBuffer(buffer)) return 'image/gif'
   if (isWebpBuffer(buffer)) return 'image/webp'
   if (isSvgBuffer(buffer)) return 'image/svg+xml'
+  if (isPdfBuffer(buffer)) return 'application/pdf'
+  if (isWebmBuffer(buffer)) return 'video/webm'
+  if (isOggBuffer(buffer)) return 'video/ogg'
+  if (isMp4LikeBuffer(buffer)) return 'video/mp4'
   return null
 }
 
@@ -219,6 +262,52 @@ const normalizeImagePayload = (mimeType, buffer) => {
   }
 
   return null
+}
+
+const getUploadTypeByMime = (mimeType) => {
+  if (mimeType.startsWith('image/')) return 'image'
+  if (mimeType.startsWith('video/')) return 'video'
+  if (mimeType === 'application/pdf') return 'document'
+  return null
+}
+
+const normalizeUploadPayload = (mimeType, buffer) => {
+  const uploadType = getUploadTypeByMime(mimeType)
+  if (!uploadType) {
+    return null
+  }
+
+  if (uploadType === 'image') {
+    return normalizeImagePayload(mimeType, buffer)
+  }
+
+  if (uploadType === 'document') {
+    if (isPdfBuffer(buffer)) {
+      return { mimeType: 'application/pdf', buffer }
+    }
+    return null
+  }
+
+  // Video payload: trust declared mime after lightweight signature checks.
+  if (mimeType === 'video/webm' && !isWebmBuffer(buffer)) {
+    return null
+  }
+  if (mimeType === 'video/ogg' && !isOggBuffer(buffer)) {
+    return null
+  }
+  if (
+    (mimeType === 'video/mp4' ||
+      mimeType === 'video/m4v' ||
+      mimeType === 'video/quicktime') &&
+    !isMp4LikeBuffer(buffer)
+  ) {
+    const detected = detectMimeFromBuffer(buffer)
+    if (detected !== 'video/mp4') {
+      return null
+    }
+  }
+
+  return { mimeType, buffer }
 }
 
 const getSafeCandidates = (pathname) => {
@@ -358,6 +447,7 @@ const requestHandler = async (req, res) => {
         '/api/health',
         '/api/site-info',
         '/api/content (GET, PUT)',
+        '/api/admin/upload-asset (POST)',
         '/api/admin/upload-image (POST)',
         '/api/rebuild (POST)',
       ],
@@ -425,7 +515,10 @@ const requestHandler = async (req, res) => {
     return
   }
 
-  if (pathname === '/api/admin/upload-image' && req.method === 'POST') {
+  const isAssetUploadRoute = pathname === '/api/admin/upload-asset'
+  const isImageUploadRoute = pathname === '/api/admin/upload-image'
+
+  if ((isAssetUploadRoute || isImageUploadRoute) && req.method === 'POST') {
     let rawBody = ''
     try {
       rawBody = await readRequestBody(req, MAX_UPLOAD_BODY_BYTES)
@@ -460,7 +553,7 @@ const requestHandler = async (req, res) => {
     const requestedMimeType = match[1].toLowerCase()
     if (!MIME_TO_EXTENSION[requestedMimeType]) {
       sendJson(res, 400, {
-        error: `Unsupported image mime type: ${requestedMimeType}`,
+        error: `Unsupported mime type: ${requestedMimeType}`,
       })
       return
     }
@@ -479,26 +572,34 @@ const requestHandler = async (req, res) => {
       return
     }
 
-    const normalizedImage = normalizeImagePayload(requestedMimeType, fileBuffer)
-    if (!normalizedImage) {
+    const normalizedAsset = normalizeUploadPayload(requestedMimeType, fileBuffer)
+    if (!normalizedAsset) {
       sendJson(res, 400, {
-        error:
-          'Uploaded file is not a valid supported image. Try JPG, PNG, GIF, WEBP, or SVG.',
+        error: 'Uploaded file is not a valid supported asset.',
       })
       return
     }
 
-    const finalMimeType = normalizedImage.mimeType
-    const finalBuffer = normalizedImage.buffer
-    const extension = MIME_TO_EXTENSION[finalMimeType]
-    if (!extension) {
-      sendJson(res, 400, { error: `Unsupported image mime type: ${finalMimeType}` })
+    const finalMimeType = normalizedAsset.mimeType
+    const finalBuffer = normalizedAsset.buffer
+    const finalType = getUploadTypeByMime(finalMimeType)
+
+    if (isImageUploadRoute && finalType !== 'image') {
+      sendJson(res, 400, { error: 'This endpoint only accepts images.' })
       return
     }
 
-    if (finalBuffer.length > MAX_UPLOAD_BYTES) {
+    const extension = MIME_TO_EXTENSION[finalMimeType]
+    if (!extension) {
+      sendJson(res, 400, { error: `Unsupported mime type: ${finalMimeType}` })
+      return
+    }
+
+    const sizeLimit = UPLOAD_LIMITS_BY_TYPE[finalType] || MAX_UPLOAD_BYTES
+    if (finalBuffer.length > sizeLimit) {
+      const sizeLimitMb = Math.round(sizeLimit / (1024 * 1024))
       sendJson(res, 413, {
-        error: 'Image exceeds 8MB upload limit after processing.',
+        error: `File exceeds ${sizeLimitMb}MB upload limit for ${finalType}.`,
       })
       return
     }
@@ -544,6 +645,7 @@ const requestHandler = async (req, res) => {
 
       sendJson(res, 200, {
         ok: true,
+        type: finalType,
         mimeType: finalMimeType,
         bytes: finalBuffer.length,
         relativePath,

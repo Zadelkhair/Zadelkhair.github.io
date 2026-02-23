@@ -22,6 +22,7 @@ HOST=0.0.0.0 PORT=3000 STATIC_DIR=out npm run serve:local
 - `GET /api/site-info` - static directory details and top-level files
 - `GET /api/content` - read editable website content JSON
 - `PUT /api/content` - save website content JSON
+- `POST /api/admin/upload-asset` - upload images, videos, and PDF files
 - `POST /api/admin/upload-image` - upload image file data to `public/images/uploads/*`
 - `POST /api/rebuild` - run `npm run build` from the project root
 
@@ -39,3 +40,4 @@ After starting the server, open:
 - This is for local management and preview.
 - If `out/` is missing, run `npm run build` first.
 - Content data is stored in `src/data/site-content.json`.
+- Uploads are saved under `public/images/uploads/*` and mirrored to `out/images/uploads/*` when available.

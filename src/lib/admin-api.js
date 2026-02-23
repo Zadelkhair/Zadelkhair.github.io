@@ -6,7 +6,39 @@ const formatApiError = (message, status) => {
   return error
 }
 
-const MAX_UPLOAD_BYTES = 8 * 1024 * 1024
+const UPLOAD_LIMITS = {
+  document: 10 * 1024 * 1024,
+  image: 8 * 1024 * 1024,
+  video: 50 * 1024 * 1024,
+}
+
+const IMAGE_EXTENSIONS = new Set(['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'])
+const VIDEO_EXTENSIONS = new Set(['mp4', 'm4v', 'webm', 'ogv', 'ogg', 'mov'])
+
+const extensionFromName = (name) => {
+  const safeName = typeof name === 'string' ? name : ''
+  const parts = safeName.split('.')
+  if (parts.length < 2) {
+    return ''
+  }
+  return parts[parts.length - 1].toLowerCase()
+}
+
+const getAssetType = (file) => {
+  const mimeType = (file?.type || '').toLowerCase()
+  const extension = extensionFromName(file?.name || '')
+
+  if (mimeType.startsWith('image/') || IMAGE_EXTENSIONS.has(extension)) {
+    return 'image'
+  }
+  if (mimeType.startsWith('video/') || VIDEO_EXTENSIONS.has(extension)) {
+    return 'video'
+  }
+  if (mimeType === 'application/pdf' || extension === 'pdf') {
+    return 'document'
+  }
+  return null
+}
 
 export const fetchJson = async (url, options = {}) => {
   const response = await fetch(url, options)
@@ -70,17 +102,41 @@ const fileToDataUrl = (file) =>
   })
 
 export const uploadImage = async ({ file, folder = 'general' }) => {
+  return uploadAsset({ file, folder, mode: 'image' })
+}
+
+export const uploadAsset = async ({ file, folder = 'general', mode = 'any' }) => {
   if (!file) {
     throw new Error('No file selected.')
   }
 
-  if (typeof file.size === 'number' && file.size > MAX_UPLOAD_BYTES) {
-    throw new Error('Image exceeds 8MB upload limit.')
+  const assetType = getAssetType(file)
+  if (!assetType) {
+    throw new Error('Unsupported file type. Use image, video, or PDF.')
+  }
+
+  if (mode === 'image' && assetType !== 'image') {
+    throw new Error('Please upload an image file.')
+  }
+  if (mode === 'video' && assetType !== 'video') {
+    throw new Error('Please upload a video file.')
+  }
+  if (mode === 'document' && assetType !== 'document') {
+    throw new Error('Please upload a PDF document.')
+  }
+  if (mode === 'media' && assetType !== 'image' && assetType !== 'video') {
+    throw new Error('Please upload image or video files.')
+  }
+
+  const sizeLimit = UPLOAD_LIMITS[assetType] || UPLOAD_LIMITS.image
+  if (typeof file.size === 'number' && file.size > sizeLimit) {
+    const limitMb = Math.round(sizeLimit / (1024 * 1024))
+    throw new Error(`File exceeds ${limitMb}MB upload limit.`)
   }
 
   const dataUrl = await fileToDataUrl(file)
 
-  return fetchJson('/api/admin/upload-image', {
+  return fetchJson('/api/admin/upload-asset', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
