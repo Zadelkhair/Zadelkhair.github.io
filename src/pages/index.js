@@ -2,7 +2,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { Sora, Work_Sans } from 'next/font/google'
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import styles from '@/styles/Home.module.css'
 import siteContent from '@/data/site-content.json'
 
@@ -133,6 +133,7 @@ export default function Home() {
   const portraitAlt = getString(hero.portraitAlt, 'Developer portrait')
   const ctaEmailLabel = getString(cta.emailLabel, email)
   const ctaPhoneLabel = getString(cta.phoneLabel, 'Call Me')
+  const [hasLocalManagerServer, setHasLocalManagerServer] = useState(false)
 
   const [projectSlides, setProjectSlides] = useState(() =>
     works.reduce((accumulator, project) => {
@@ -140,6 +141,49 @@ export default function Home() {
       return accumulator
     }, {})
   )
+
+  useEffect(() => {
+    let isMounted = true
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 1200)
+
+    const detectServer = async () => {
+      try {
+        const response = await fetch('/api/health', {
+          method: 'GET',
+          cache: 'no-store',
+          signal: controller.signal,
+          headers: { Accept: 'application/json' },
+        })
+
+        if (!response.ok) {
+          return
+        }
+
+        const contentType = response.headers.get('content-type') || ''
+        if (!contentType.includes('application/json')) {
+          return
+        }
+
+        const payload = await response.json()
+        if (isMounted && payload?.status === 'ok') {
+          setHasLocalManagerServer(true)
+        }
+      } catch {
+        // Hide dashboard link silently when local manager API is unavailable.
+      } finally {
+        clearTimeout(timeoutId)
+      }
+    }
+
+    detectServer()
+
+    return () => {
+      isMounted = false
+      clearTimeout(timeoutId)
+      controller.abort()
+    }
+  }, [])
 
   const setProjectSlide = (projectTitle, slideIndex) => {
     setProjectSlides((current) => ({ ...current, [projectTitle]: slideIndex }))
@@ -184,9 +228,11 @@ export default function Home() {
                 Email
               </a>
             )}
-            <a href="/dashboard" className={styles.navLink}>
-              Dashboard
-            </a>
+            {hasLocalManagerServer && (
+              <a href="/dashboard" className={styles.navLink}>
+                Dashboard
+              </a>
+            )}
             <a href={resumePath} className={styles.primaryBtn} download>
               Download Resume
             </a>
