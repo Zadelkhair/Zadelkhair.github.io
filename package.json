@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "serve:local": "node server/index.js",
+    "serve:local:build": "npm run build && npm run serve:local"
   },
   "dependencies": {
     "eslint": "8.36.0",

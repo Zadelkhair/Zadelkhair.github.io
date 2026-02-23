@@ -1,0 +1,253 @@
+{
+  "meta": {
+    "title": "Zadelkhair Abdelkoddous | Full-Stack & AI Developer",
+    "description": "Portfolio of Zadelkhair Abdelkoddous - Full-Stack and AI-focused developer building web, mobile, and intelligent software systems."
+  },
+  "brand": "ZADELKHAIR ABDELKODDOUS",
+  "contact": {
+    "linkedinUrl": "https://www.linkedin.com/in/abdelkoddouszad",
+    "email": "abdo.zad.raja2@gmail.com",
+    "phone": "+212680096104",
+    "phoneDisplay": "+212 680 096 104",
+    "location": "Based in Casablanca, Morocco",
+    "resumePath": "/abdelkoddous-zadelkhair-resume.pdf"
+  },
+  "hero": {
+    "eyebrow": "Full-Stack Developer + AI Agent Builder",
+    "title": "I build software that turns complex data into clear user decisions.",
+    "lead": "I am a Morocco-based developer with a strong foundation in web, mobile, and AI-integrated products. I focus on reliable backend architecture, intuitive interfaces, and practical model-powered features.",
+    "portraitSrc": "images/uploads/profile/image_zad-mlylwj35-4su4p0.jpg",
+    "portraitAlt": "Portrait of Zadelkhair Abdelkoddous"
+  },
+  "sections": {
+    "capabilities": {
+      "title": "Core Capabilities",
+      "description": "A practical stack for shipping complete products, from data pipelines and APIs to polished frontends and mobile interfaces."
+    },
+    "experience": {
+      "title": "Experience Timeline",
+      "description": "Roles focused on full-stack delivery, AI workflows, and technical mentorship."
+    },
+    "education": {
+      "title": "Education",
+      "description": "Academic training in computer science and software engineering fundamentals."
+    },
+    "languages": {
+      "title": "Languages",
+      "description": "I work comfortably across multilingual environments and teams."
+    },
+    "projects": {
+      "title": "Featured Project Work",
+      "description": "Portfolio projects from my previous work, including fitness, real-estate, CRM, and educational systems."
+    }
+  },
+  "cta": {
+    "lead": "Available for Full-Stack and AI-focused software opportunities.",
+    "title": "Let's build useful technology with measurable impact.",
+    "emailLabel": "abdo.zad.raja2@gmail.com",
+    "phoneLabel": "Call Me"
+  },
+  "skillGroups": [
+    {
+      "id": "skill-mlylcif5-2iotxy",
+      "title": "AI + Data Systems",
+      "list": [
+        "LangChain",
+        "OpenAI",
+        "LLMs",
+        "Data Cleaning",
+        "Web Scraping"
+      ]
+    },
+    {
+      "id": "skill-mlylcif5-7bcvcc",
+      "title": "Frontend & Mobile",
+      "list": [
+        "React.js",
+        "Vue.js",
+        "React Native",
+        "Bootstrap"
+      ]
+    },
+    {
+      "id": "skill-mlylcif5-ea9ach",
+      "title": "Backend & APIs",
+      "list": [
+        "Laravel",
+        "Node.js",
+        "Express.js",
+        "PHP",
+        "Python"
+      ]
+    },
+    {
+      "id": "skill-mlylcif5-89rjhg",
+      "title": "Infrastructure",
+      "list": [
+        "AWS (EC2, S3, SES)",
+        "Docker",
+        "Git",
+        "Ubuntu/Linux",
+        "MongoDB"
+      ]
+    }
+  ],
+  "works": [
+    {
+      "id": "project-mlylcif5-nts3a6",
+      "category": "Fitness Platform",
+      "title": "Mifithub",
+      "image": "images/mifitLogo.png",
+      "modal": {
+        "title": "Mifithub",
+        "description": "A fitness platform with mobile apps, a website, and a trainer dashboard for personalized fitness programs.",
+        "categories": [
+          "Mobile App",
+          "Web Development"
+        ]
+      },
+      "swiperImages": [
+        "images/slide1.png",
+        "images/slide2.png",
+        "images/slide3.png",
+        "images/slide4.png",
+        "images/slide5.png"
+      ]
+    },
+    {
+      "id": "project-mlylcif5-q30v2a",
+      "category": "Real Estate Platform",
+      "title": "Multilist",
+      "image": "images/portfolio/multilist.png",
+      "modal": {
+        "title": "Multilist",
+        "description": "A real estate platform with features like map search, ranking systems, and ad promotion.",
+        "categories": [
+          "Web Development",
+          "UI/UX Design"
+        ]
+      },
+      "swiperImages": [
+        "images/multilist1.png",
+        "images/multilist2.png",
+        "images/multilist3.png",
+        "images/multilist4.png"
+      ]
+    },
+    {
+      "id": "project-mlylcif5-ki1lir",
+      "category": "CRM System",
+      "title": "Alliances",
+      "image": "images/portfolio/alliances.png",
+      "modal": {
+        "title": "Alliances CRM",
+        "description": "A CRM system for managing customer communication, lead tracking, and property management.",
+        "categories": [
+          "Web Development",
+          "Database Management"
+        ]
+      },
+      "swiperImages": [
+        "images/alliances.png"
+      ]
+    },
+    {
+      "id": "project-mlylcif5-pd4a5p",
+      "category": "Educational application",
+      "title": "Alkhayrat",
+      "image": "images/portfolio/alkhayrat.png",
+      "modal": {
+        "title": "Code Alkhayrat",
+        "description": "Applications (CODE ALKHAYRAT) to support driving students in preparing for the exam (codealkhayrat.com).",
+        "categories": [
+          "Web Development"
+        ]
+      },
+      "swiperImages": [
+        "images/alkhayrat1.png",
+        "images/alkhayrat2.png",
+        "images/alkhayrat3.png",
+        "images/alkhayrat4.png"
+      ]
+    }
+  ],
+  "experiences": [
+    {
+      "id": "experience-mlylcif5-3xb1k0",
+      "role": "Full-Stack / AI Agent Developer (Internship)",
+      "company": "QUALISO",
+      "location": "Casablanca, Morocco",
+      "period": "Apr 2025 - Aug 2025",
+      "points": [
+        "Built a full AI-driven pipeline for scraping, cleaning, enriching, and estimating car market prices.",
+        "Developed LangChain agents with multi-model orchestration to improve prediction quality on incomplete records.",
+        "Shipped a production-ready Laravel + Vue dashboard for monitoring market trends and AI outputs."
+      ]
+    },
+    {
+      "id": "experience-mlylcif5-2nnhjo",
+      "role": "IT Teacher",
+      "company": "Ministry of National Education",
+      "location": "Berrechid, Morocco",
+      "period": "Oct 2022 - Present",
+      "points": [
+        "Teach programming, algorithms, networking, and system fundamentals to high school students.",
+        "Mentor technology club initiatives and hands-on innovation projects.",
+        "Strengthen communication, leadership, and coaching through technical instruction."
+      ]
+    },
+    {
+      "id": "experience-mlylcif5-0ys08x",
+      "role": "Software Developer (Internship)",
+      "company": "AGRI4.0",
+      "location": "Agadir, Morocco",
+      "period": "May 2021 - Sep 2021",
+      "points": [
+        "Developed modules for a mobile agriculture management application.",
+        "Contributed to API development, database design, and UML-based planning.",
+        "Worked in a Git + Agile team environment focused on iterative delivery."
+      ]
+    },
+    {
+      "id": "experience-mlylcif5-djuntd",
+      "role": "IT Technician",
+      "company": "ALKHAYRAT",
+      "location": "Berrechid, Morocco",
+      "period": "Jan 2019 - Feb 2021",
+      "points": [
+        "Maintained IT infrastructure and handled software/system deployments.",
+        "Built and supported internal web/mobile full-stack solutions.",
+        "Provided technical support and troubleshooting across teams."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "id": "education-mlylcif5-9m9qiq",
+      "degree": "BSc in Computer Science",
+      "school": "Ibn Zohr University",
+      "period": "2020 - 2021",
+      "details": "Focus on software engineering, AI fundamentals, operating systems, networking, Java OOP, and database systems."
+    },
+    {
+      "id": "education-mlylcif5-wgcxf6",
+      "degree": "Specialized Technician Diploma - IT Development Techniques",
+      "school": "Institute of Informatics, Commerce, and Management (OFPPT), Berrechid",
+      "period": "2017 - 2020",
+      "details": "Training in C++, Linux/Unix, SQL, web development, and client-server networking foundations."
+    },
+    {
+      "id": "education-mlylcif5-19lzsb",
+      "degree": "High School Diploma - Experimental Sciences",
+      "school": "Lycée Oulad Hriz, Berrechid",
+      "period": "2017",
+      "details": "Scientific track with emphasis on analytical reasoning."
+    }
+  ],
+  "spokenLanguages": [
+    "Arabic (Native)",
+    "English (B2)",
+    "French (B2)",
+    "German (B2)"
+  ]
+}
