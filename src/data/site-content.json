@@ -94,6 +94,28 @@
   ],
   "works": [
     {
+      "id": "project-zdeutsch-b2-library",
+      "category": "German Exam Prep Platform",
+      "title": "ZDeutsch",
+      "image": "images/projects/zdeutsch-library.png",
+      "liveUrl": "https://zadelkhair.github.io/ZDeutsch/lesen.html?level=b2&theme=batata&version=default",
+      "liveLabel": "Open Live Project",
+      "modal": {
+        "title": "ZDeutsch",
+        "description": "An interactive TELC-style German exam practice platform with themed reading drills, timers, Arabic support, downloadable content, and self-checking flows. It has helped thousands of learners practice German more consistently and prepare with confidence for their exams.",
+        "categories": [
+          "Educational Platform",
+          "Exam Preparation",
+          "Multilingual UX",
+          "Frontend Development"
+        ]
+      },
+      "swiperImages": [
+        "images/projects/zdeutsch-library.png",
+        "images/projects/zdeutsch-batata.png"
+      ]
+    },
+    {
       "id": "project-mlylcif5-nts3a6",
       "category": "Fitness Platform",
       "title": "Mifithub",

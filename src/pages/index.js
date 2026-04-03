@@ -55,6 +55,8 @@ const works = (Array.isArray(siteContent?.works) ? siteContent.works : []).map(
       category: getString(project?.category, 'Project'),
       title: getString(project?.title, fallbackTitle),
       image,
+      liveUrl: getString(project?.liveUrl),
+      liveLabel: getString(project?.liveLabel, 'Open Live Project'),
       modal: {
         title: getString(
           project?.modal?.title,
@@ -500,6 +502,7 @@ export default function Home() {
               const activeMediaType = getProjectMediaType(
                 project.swiperImages[safeIndex] || project.image
               )
+              const liveUrl = toLinkHref(project.liveUrl)
               const isProjectVisible = Boolean(visibleProjects[projectId])
               const mediaLoadKey = `${projectId}-${safeIndex}-${activeMediaPath}`
               const isMediaLoaded = Boolean(loadedProjectMedia[mediaLoadKey])
@@ -616,9 +619,21 @@ export default function Home() {
                       <span key={`${project.title}-${item}`}>{item}</span>
                     ))}
                   </div>
-                  <p className={styles.projectSlideCount}>
-                    Slide {safeIndex + 1} of {totalSlides}
-                  </p>
+                  <div className={styles.projectMetaRow}>
+                    <p className={styles.projectSlideCount}>
+                      Slide {safeIndex + 1} of {totalSlides}
+                    </p>
+                    {liveUrl && (
+                      <a
+                        href={liveUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.projectActionLink}
+                      >
+                        {project.liveLabel}
+                      </a>
+                    )}
+                  </div>
                 </article>
               )
             })}

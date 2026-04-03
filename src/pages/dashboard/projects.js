@@ -29,6 +29,8 @@ const emptyProject = () => ({
   category: 'New Category',
   title: 'New Project',
   image: '',
+  liveUrl: '',
+  liveLabel: 'Open Live Project',
   modal: {
     title: 'New Project',
     description: '',
@@ -420,6 +422,36 @@ export default function DashboardProjects() {
                         updateSelectedProject((project) => ({
                           ...project,
                           modal: { ...project.modal, description: event.target.value },
+                        }))
+                      }
+                    />
+                  </div>
+
+                  <div className={styles.field}>
+                    <label htmlFor="project-live-url">Live project URL</label>
+                    <input
+                      id="project-live-url"
+                      className={styles.input}
+                      value={selectedProject.liveUrl}
+                      onChange={(event) =>
+                        updateSelectedProject((project) => ({
+                          ...project,
+                          liveUrl: event.target.value.trim(),
+                        }))
+                      }
+                    />
+                  </div>
+
+                  <div className={styles.field}>
+                    <label htmlFor="project-live-label">Live button label</label>
+                    <input
+                      id="project-live-label"
+                      className={styles.input}
+                      value={selectedProject.liveLabel}
+                      onChange={(event) =>
+                        updateSelectedProject((project) => ({
+                          ...project,
+                          liveLabel: event.target.value,
                         }))
                       }
                     />

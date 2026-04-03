@@ -106,6 +106,8 @@ export const normalizeContent = (value) => {
       category: ensureString(item?.category),
       title: ensureString(item?.title),
       image: toAssetPath(item?.image),
+      liveUrl: ensureString(item?.liveUrl),
+      liveLabel: ensureString(item?.liveLabel),
       modal: {
         title: ensureString(item?.modal?.title),
         description: ensureString(item?.modal?.description),
